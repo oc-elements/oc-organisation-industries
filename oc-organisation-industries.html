@@ -1,0 +1,81 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../paper-spinner/paper-spinner.html">
+
+<dom-module id="oc-organisation-industries">
+  <template>
+
+    <iron-ajax
+            auto
+            url="[[ _getIndustryOptionsUrl() ]]"
+            headers='{"Authorization": "Basic cnVkb2xmQG9yZGVyY2xvdWQuY28uemE6cGFzc3dvcmQ=", "X-Ordercloud-Organisation": "b241bebc36530fe8ebd4a499323e605d"}'
+            handle-as="json"
+            on-response="_handleIndustryOptionsResponse">
+    </iron-ajax>
+
+    <style>
+      :host {
+        display: block;
+      }
+      paper-checkbox {
+        display:block;
+        margin-top: 1em;
+      }
+    </style>
+
+    <h4>Industries</h4>
+    <paper-spinner active$="[[_loading]]" hidden$="[[!_loading]]"></paper-spinner>
+    <template is="dom-repeat" items="[[ industryOptions ]]" as="industryOption">
+      <paper-checkbox on-tap="_industrySelected" checked="[[ _containsIndustry(selectedIndustries, industryOption) ]]">
+        [[ industryOption.name ]]
+      </paper-checkbox>
+    </template>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'oc-organisation-industries',
+
+      properties: {
+        selectedIndustries: [{
+          id: String,
+          name: String
+        }]
+      },
+
+      ready: function() {
+        this._loading = true;
+        this.selectedIndustries = this.selectedIndustries || [];
+      },
+
+      _getIndustryOptionsUrl: function() {
+        return "https://test-api.ordercloud.com/resource/industry";
+      },
+
+      _handleIndustryOptionsResponse: function(event) {
+        this._loading = false;
+        this.industryOptions = event.detail.response.results;
+      },
+
+      _containsIndustry: function(selectedIndustries, industry) {
+        for(var selectedIndustry in selectedIndustries) {
+          if (selectedIndustry.id === industry.id) {
+            return true;
+          }
+        }
+        return false;
+      },
+
+      _industrySelected: function(event) {
+        if (event.currentTarget.checked) {
+          this.selectedIndustries.push({ id: event.model.industryOption.id, name: event.model.industryOption.name});
+        } else {
+          var removeIndex = this.selectedIndustries.map(function(item) { return item.id; }).indexOf(event.model.industryOption.id);
+          this.selectedIndustries.splice(removeIndex, 1);
+        }
+      }
+    });
+  </script>
+</dom-module>
