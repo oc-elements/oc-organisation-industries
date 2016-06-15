@@ -2,17 +2,19 @@
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../paper-spinner/paper-spinner.html">
+<link rel="import" href="../oc-organisation-api/oc-organisation-api.html">
+<link rel="import" href="../oc-core-utils/oc-api-consumer-behaviour.html">
 
 <dom-module id="oc-organisation-industries">
   <template>
 
-    <iron-ajax
+    <!--<iron-ajax
             auto
             url="[[ _getIndustryOptionsUrl() ]]"
-            headers='{"Authorization": "Basic cnVkb2xmQG9yZGVyY2xvdWQuY28uemE6cGFzc3dvcmQ=", "X-Ordercloud-Organisation": "b241bebc36530fe8ebd4a499323e605d"}'
+            headers='{"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiMjQxYmViYzM2NTMwZmU4ZWJkNGE0OTkzMjNlNjA1ZCIsImV4cCI6IjE1OTIyMzMzNzAiLCJwcm4iOiJydWRvbGZAb3JkZXJjbG91ZC5jby56YSJ9.ElfODyQO5jCOBG3ZvOU3uVhvDtE-nXt07aB5XjljjZU", "X-Ordercloud-Organisation": "b241bebc36530fe8ebd4a499323e605d"}'
             handle-as="json"
             on-response="_handleIndustryOptionsResponse">
-    </iron-ajax>
+    </iron-ajax>-->
 
     <style>
       :host {
@@ -31,12 +33,18 @@
         [[ industryOption.name ]]
       </paper-checkbox>
     </template>
+
+    <div id="errorMessage" class="error-message" hidden>Woops, someting went wrong!</div>
+
+    <oc-organisation-api id="organisationApi"></oc-organisation-api>
+
   </template>
 
-  <script>
+  <script>(function () {
+    var OC = window.OC;
     Polymer({
-
       is: 'oc-organisation-industries',
+      behaviors: [OC.Behaviours.ApiConsumer],
 
       properties: {
         selectedIndustries: {
@@ -46,9 +54,18 @@
         }
       },
 
-      ready: function() {
+      ready: function () {
         this._loading = true;
         this.selectedIndustries = this.selectedIndustries || [];
+
+        OC.token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiMjQxYmViYzM2NTMwZmU4ZWJkNGE0OTkzMjNlNjA1ZCIsImV4cCI6IjE1OTIyMzMzNzAiLCJwcm4iOiJydWRvbGZAb3JkZXJjbG91ZC5jby56YSJ9.ElfODyQO5jCOBG3ZvOU3uVhvDtE-nXt07aB5XjljjZU";
+
+        this.$.organisationApi.getOrganisationIndustries()
+                .then(this._setPropertyResponseResults.bind(this, '_industryOptions'))
+                .catch(function (error) {
+                  this.$.errorMessage.hidden = false;
+                }.bind(this))
+                .finally(this._loading = false);
       },
 
       _getIndustryOptionsUrl: function() {
@@ -72,10 +89,12 @@
         if (event.currentTarget.checked) {
           this.selectedIndustries.push({ id: event.model.industryOption.id, name: event.model.industryOption.name});
         } else {
-          var removeIndex = this.selectedIndustries.map(function(item) { return item.id; }).indexOf(event.model.industryOption.id);
+          var removeIndex = this.selectedIndustries.map(function(item) { return item
+                  .id; }).indexOf(event.model.industryOption.id);
           this.selectedIndustries.splice(removeIndex, 1);
         }
       }
     });
+    })();
   </script>
 </dom-module>
