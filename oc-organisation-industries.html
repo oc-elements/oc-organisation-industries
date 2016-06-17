@@ -7,15 +7,6 @@
 
 <dom-module id="oc-organisation-industries">
   <template>
-
-    <!--<iron-ajax
-            auto
-            url="[[ _getIndustryOptionsUrl() ]]"
-            headers='{"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiMjQxYmViYzM2NTMwZmU4ZWJkNGE0OTkzMjNlNjA1ZCIsImV4cCI6IjE1OTIyMzMzNzAiLCJwcm4iOiJydWRvbGZAb3JkZXJjbG91ZC5jby56YSJ9.ElfODyQO5jCOBG3ZvOU3uVhvDtE-nXt07aB5XjljjZU", "X-Ordercloud-Organisation": "b241bebc36530fe8ebd4a499323e605d"}'
-            handle-as="json"
-            on-response="_handleIndustryOptionsResponse">
-    </iron-ajax>-->
-
     <style>
       :host {
         display: block;
@@ -58,25 +49,12 @@
         this._loading = true;
         this.selectedIndustries = this.selectedIndustries || [];
 
-        OC.token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiMjQxYmViYzM2NTMwZmU4ZWJkNGE0OTkzMjNlNjA1ZCIsImV4cCI6IjE1OTIyMzMzNzAiLCJwcm4iOiJydWRvbGZAb3JkZXJjbG91ZC5jby56YSJ9.ElfODyQO5jCOBG3ZvOU3uVhvDtE-nXt07aB5XjljjZU";
-
         this.$.organisationApi.getOrganisationIndustries()
                 .then(this._setPropertyResponseResults.bind(this, '_industryOptions'))
                 .catch(function (error) {
                   this.$.errorMessage.hidden = false;
                 }.bind(this))
                 .finally(this._loading = false);
-      },
-
-      _getIndustryOptionsUrl: function() {
-        return "https://test-api.ordercloud.com/resource/industry";
-      },
-
-      _handleIndustryOptionsResponse: function(event) {
-        this._loading = false;
-        this._industryOptions = event.detail.response.results.map(function (option) {
-          return {id:option.id, name:option.name};
-        });
       },
 
       _containsIndustry: function(selectedIndustries, industry) {
