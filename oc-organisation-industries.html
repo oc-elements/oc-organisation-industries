@@ -19,7 +19,7 @@
 
     <h4>Industries</h4>
     <template is="dom-repeat" items="[[ _industryOptions ]]" as="industryOption">
-      <paper-checkbox on-tap="_industrySelected" checked="[[ _containsIndustry(selectedIndustries, industryOption) ]]" max-width="250px">
+      <paper-checkbox on-tap="_industrySelected" checked="[[ _containsIndustry(selectedIndustries, industryOption) ]]">
         [[ industryOption.name ]]
       </paper-checkbox>
     </template>
