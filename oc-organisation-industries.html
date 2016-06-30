@@ -18,9 +18,8 @@
     </style>
 
     <h4>Industries</h4>
-    <paper-spinner active$="[[_loading]]" hidden$="[[!_loading]]"></paper-spinner>
     <template is="dom-repeat" items="[[ _industryOptions ]]" as="industryOption">
-      <paper-checkbox on-tap="_industrySelected" checked="[[ _containsIndustry(selectedIndustries, industryOption) ]]">
+      <paper-checkbox on-tap="_industrySelected" checked="[[ _containsIndustry(selectedIndustries, industryOption) ]]" max-width="250px">
         [[ industryOption.name ]]
       </paper-checkbox>
     </template>
